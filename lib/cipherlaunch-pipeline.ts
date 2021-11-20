@@ -27,6 +27,7 @@ export class CipherLaunchPipeline extends cdk.Stack {
           region: StageToRegionMap.get(stage) 
         }
       });
+      pipeline.addStage(cipherLaunchStage);
     }
   }
 }
