@@ -1,11 +1,12 @@
 import * as cdk from '@aws-cdk/core';
 import { CodePipeline, CodePipelineSource, ShellStep } from '@aws-cdk/pipelines';
+import { CipherLaunchStage } from './cipherlaunch-stage';
 
-const applicationAccount = '342243318645'
+const ApplicationAccount = '342243318645'
 
-const stageToRegionMap: Map<string, string> = new Map<string,string>();
-stageToRegionMap.set('dev', 'us-west-2');
-stageToRegionMap.set('prod', 'us-east-1');
+const StageToRegionMap: Map<string, string> = new Map<string,string>();
+StageToRegionMap.set('dev', 'us-west-2');
+StageToRegionMap.set('prod', 'us-east-1');
 
 export class CipherLaunchPipeline extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -19,8 +20,13 @@ export class CipherLaunchPipeline extends cdk.Stack {
       })
     });
 
-    for (let stage of stageToRegionMap.keys()) {
-      // Add Stacks
+    for (let stage of StageToRegionMap.keys()) {
+      const cipherLaunchStage  =  new CipherLaunchStage (this, `CipherLaunch-${stage}`, {
+        env: {
+          account: ApplicationAccount, 
+          region: StageToRegionMap.get(stage) 
+        }
+      });
     }
   }
 }
