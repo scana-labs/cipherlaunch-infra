@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/cipherlaunch-infra.ts",
+  "app": "npx ts-node --prefer-ts-exts bin/cipherlaunch-pipeline.ts",
   "watch": {
     "include": [
       "**"

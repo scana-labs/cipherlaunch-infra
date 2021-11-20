@@ -2,7 +2,7 @@
   "name": "cipherlaunch-infra",
   "version": "0.1.0",
   "bin": {
-    "cipherlaunch-infra": "bin/cipherlaunch-infra.js"
+    "cipherlaunch-infra": "bin/cipherlaunch-pipeline.js"
   },
   "scripts": {
     "build": "tsc",
