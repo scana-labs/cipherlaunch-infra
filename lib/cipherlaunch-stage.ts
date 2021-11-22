@@ -9,7 +9,7 @@ export class CipherLaunchStage extends cdk.Stage {
   
       const cipherLaunchVPC = new CipherLaunchVPC(this, `${id}-VPC`, props);
 
-      const cipherLaunchContainerService = new CipherLaunchContainerService(this, '${id}-container', {
+      const cipherLaunchContainerService = new CipherLaunchContainerService(this, `${id}-api`, {
         vpc: cipherLaunchVPC.vpc,
         ... props
       });
