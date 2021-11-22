@@ -13,5 +13,7 @@ export class CipherLaunchStage extends cdk.Stage {
         vpc: cipherLaunchVPC.vpc,
         ... props
       });
+
+      cipherLaunchContainerService.addDependency(cipherLaunchVPC);
     }
 }
