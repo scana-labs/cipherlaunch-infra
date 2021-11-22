@@ -7,9 +7,9 @@ export class CipherLaunchStage extends cdk.Stage {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
       super(scope, id, props);
   
-      const cipherLaunchVPC = new CipherLaunchVPC(this, `${id}-VPC`, props);
+      const cipherLaunchVPC = new CipherLaunchVPC(this, 'VPC', props);
 
-      const cipherLaunchContainerService = new CipherLaunchContainerService(this, `${id}-api`, {
+      const cipherLaunchContainerService = new CipherLaunchContainerService(this, 'api', {
         vpc: cipherLaunchVPC.vpc,
         ... props
       });

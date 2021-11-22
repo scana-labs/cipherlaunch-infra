@@ -5,7 +5,7 @@ export class CipherLaunchVPC extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        this.vpc = new Vpc(this, id, { maxAzs: 2 });
+        this.vpc = new Vpc(this, 'CipherLaunchVPC', { maxAzs: 2 });
     }
 
 }
