@@ -8,6 +8,7 @@ const ECRRepoName = "clapi"
 
 export interface CipherLaunchContainerServiceProps extends cdk.StackProps {
     vpc: ec2.Vpc;
+    stage: string;
 }
 export class CipherLaunchContainerService extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props: CipherLaunchContainerServiceProps) {
@@ -40,7 +41,10 @@ export class CipherLaunchContainerService extends cdk.Stack {
     
     taskDefinition.addContainer('Container', {
         image: ecs.ContainerImage.fromEcrRepository(repository),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
+        environment: {
+            STAGE: props.stage
+        }
     });
     
     const ecsService = new ecs.Ec2Service(this, 'Service', {

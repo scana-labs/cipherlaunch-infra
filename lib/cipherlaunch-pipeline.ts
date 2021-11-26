@@ -22,8 +22,9 @@ export class CipherLaunchPipeline extends cdk.Stack {
       const cipherLaunchStage  =  new CipherLaunchStage (this, `CipherLaunch-${stage}`, {
         env: {
           account: StageToAccountMap.get(stage), 
-          region: 'us-west-2' 
-        }
+          region: 'us-west-2'
+        },
+        stage: stage
       });
       pipeline.addStage(cipherLaunchStage);
     }
