@@ -3,7 +3,7 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
-
+import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
 const ECRRepoName = "clapi"
 
 export interface CipherLaunchContainerServiceProps extends cdk.StackProps {
@@ -46,6 +46,14 @@ export class CipherLaunchContainerService extends cdk.Stack {
             STAGE: props.stage
         }
     });
+
+    taskDefinition.addToTaskRolePolicy(
+        new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ["s3:*"],
+            resources: ["*"]
+        })
+    );
     
     const ecsService = new ecs.Ec2Service(this, 'Service', {
         cluster: cluster,
