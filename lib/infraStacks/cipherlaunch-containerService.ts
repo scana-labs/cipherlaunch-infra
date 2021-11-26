@@ -48,8 +48,9 @@ export class CipherLaunchContainerService extends cdk.Stack {
     });
     
     const ecsService = new ecs.Ec2Service(this, 'Service', {
-        cluster,
-        taskDefinition,
+        cluster: cluster,
+        taskDefinition: taskDefinition,
+        desiredCount: 0
     });
 
     }
