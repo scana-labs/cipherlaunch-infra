@@ -6,6 +6,11 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
 const ECRRepoName = "clapi"
 
+const StageGraphQLARNMappings = new Map<string,string>([
+    ["dev", "arn:aws:appsync:us-west-2:342243318645:apis/uezpj4ilpnejddwt7f32uo4xsm"]
+]
+);
+
 export interface CipherLaunchContainerServiceProps extends cdk.StackProps {
     vpc: ec2.Vpc;
     stage: string;
@@ -49,19 +54,20 @@ export class CipherLaunchContainerService extends cdk.Stack {
 
     taskDefinition.addToTaskRolePolicy(
         new PolicyStatement({
-            effect: Effect.ALLOW,
+            effect: Effect.ALLOW, 
             actions: ["s3:*"],
             resources: ["*"]
         })
     );
 
+    const graphQLARN = StageGraphQLARNMappings.get(props.stage)!
     taskDefinition.addToTaskRolePolicy(
         new PolicyStatement({
             effect: Effect.ALLOW,
             actions: ["appsync:GraphQL"],
             resources: [
-                "arn:aws:appsync:us-west-2:342243318645:apis/uezpj4ilpnejddwt7f32uo4xsm",
-                "arn:aws:appsync:us-west-2:342243318645:apis/uezpj4ilpnejddwt7f32uo4xsm/types/*/fields/*"
+                graphQLARN,
+                `${graphQLARN}/types/*/fields/*`
             ]
         })
     );
