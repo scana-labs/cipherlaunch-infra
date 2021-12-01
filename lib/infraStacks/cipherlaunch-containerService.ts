@@ -54,6 +54,17 @@ export class CipherLaunchContainerService extends cdk.Stack {
             resources: ["*"]
         })
     );
+
+    taskDefinition.addToTaskRolePolicy(
+        new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ["appsync:GraphQL"],
+            resources: [
+                "arn:aws:appsync:us-west-2:342243318645:apis/uezpj4ilpnejddwt7f32uo4xsm",
+                "arn:aws:appsync:us-west-2:342243318645:apis/uezpj4ilpnejddwt7f32uo4xsm/types/*/fields/*"
+            ]
+        })
+    );
     
     const ecsService = new ecs.Ec2Service(this, 'Service', {
         cluster: cluster,

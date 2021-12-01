@@ -3,8 +3,9 @@ import { CodePipeline, CodePipelineSource, ShellStep } from '@aws-cdk/pipelines'
 import { CipherLaunchStage } from './cipherlaunch-stage';
 
 
-const StageToAccountMap: Map<string, string> = new Map<string,string>();
-StageToAccountMap.set('dev', '342243318645');
+const StageToAccountMap: Map<string, string> = new Map<string,string>(
+  [['dev', '342243318645']]
+);
 
 export class CipherLaunchPipeline extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
