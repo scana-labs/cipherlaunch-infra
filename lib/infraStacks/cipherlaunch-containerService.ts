@@ -79,7 +79,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
     const ecsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'Service', {
         cluster: cluster,
         taskDefinition: taskDefinition,
-        desiredCount: 0
+        desiredCount: 1
     });
 
     }
