@@ -4,6 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
+import { AwsLogDriver } from '@aws-cdk/aws-ecs';
 const ECRRepoName = "clapi"
 
 const StageGraphQLARNMappings = new Map<string,string>([
@@ -49,7 +50,10 @@ export class CipherLaunchContainerService extends cdk.Stack {
         memoryLimitMiB: 512,
         environment: {
             STAGE: props.stage
-        }
+        },
+        logging: new ecs.AwsLogDriver({
+            streamPrefix: ECRRepoName
+        })
     });
 
     taskDefinition.addToTaskRolePolicy(
