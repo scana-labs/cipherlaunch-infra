@@ -53,7 +53,10 @@ export class CipherLaunchContainerService extends cdk.Stack {
         },
         logging: new ecs.AwsLogDriver({
             streamPrefix: ECRRepoName
-        })
+        }),
+        portMappings: [{
+            containerPort: 3000
+        }]
     });
 
     taskDefinition.addToTaskRolePolicy(
