@@ -3,8 +3,8 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as ecsPatterns from '@aws-cdk/aws-ecs-patterns'
 import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
-import { AwsLogDriver } from '@aws-cdk/aws-ecs';
 const ECRRepoName = "clapi"
 
 const StageGraphQLARNMappings = new Map<string,string>([
@@ -40,7 +40,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
         autoScalingGroup,
       });
     
-      cluster.addAsgCapacityProvider(capacityProvider);
+    cluster.addAsgCapacityProvider(capacityProvider);
 
     
     const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
@@ -76,7 +76,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
         })
     );
     
-    const ecsService = new ecs.Ec2Service(this, 'Service', {
+    const ecsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'Service', {
         cluster: cluster,
         taskDefinition: taskDefinition,
         desiredCount: 0
