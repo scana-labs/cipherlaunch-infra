@@ -33,7 +33,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
         instanceType: new ec2.InstanceType('a1.4xlarge'),
         machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
         desiredCapacity: 2,
-        minCapacity: 0,
+        minCapacity: 1,
         maxCapacity: 100
     });
 
