@@ -30,7 +30,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
         vpc: props.vpc,
-        instanceType: new ec2.InstanceType('a1.4xlarge'),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.XLARGE4),
         machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
         desiredCapacity: 2,
         minCapacity: 1,
