@@ -48,7 +48,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
     
     taskDefinition.addContainer('Container', {
         image: ecs.ContainerImage.fromEcrRepository(repository),
-        memoryLimitMiB: 512,
+        memoryLimitMiB: 1024,
         environment: {
             STAGE: props.stage
         },
@@ -82,6 +82,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
     
     const ecsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'Service', {
         cluster: cluster,
+        circuitBreaker: { rollback: true },
         taskDefinition: taskDefinition,
         desiredCount: 1
     });
