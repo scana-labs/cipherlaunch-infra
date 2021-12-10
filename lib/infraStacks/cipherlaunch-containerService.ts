@@ -34,6 +34,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.XLARGE4),
         machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
         desiredCapacity: 2,
+        keyName: "cl-eng",
         minCapacity: 1,
         maxCapacity: 100,
         vpcSubnets: {subnetType: SubnetType.PUBLIC}
