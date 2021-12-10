@@ -36,7 +36,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
         desiredCapacity: 2,
         minCapacity: 1,
         maxCapacity: 100,
-        vpcSubnets: SubnetType.PUBLIC
+        vpcSubnets: {subnetType: SubnetType.PUBLIC}
     });
 
     const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
