@@ -5,6 +5,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as ecsPatterns from '@aws-cdk/aws-ecs-patterns'
 import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
+import { SubnetType } from '@aws-cdk/aws-ec2';
 const ECRRepoName = "clapi"
 
 const StageGraphQLARNMappings = new Map<string,string>([
@@ -29,12 +30,13 @@ export class CipherLaunchContainerService extends cdk.Stack {
     });
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
-        vpc: props.vpc,
+        vpc: props.vpc, 
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.XLARGE4),
         machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
         desiredCapacity: 2,
         minCapacity: 1,
-        maxCapacity: 100
+        maxCapacity: 100,
+        vpcSubnets: SubnetType.PUBLIC
     });
 
     const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
