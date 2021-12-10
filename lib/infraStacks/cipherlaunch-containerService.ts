@@ -59,7 +59,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
             streamPrefix: ECRRepoName
         }),
         portMappings: [{
-            containerPort: 80
+            containerPort: 8080
         }]
     });
 
