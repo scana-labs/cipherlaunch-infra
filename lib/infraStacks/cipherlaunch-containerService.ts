@@ -29,7 +29,11 @@ export class CipherLaunchContainerService extends cdk.Stack {
             vpc: props.vpc
         });
 
-        const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'imported-SG', 'sg-07ac7977e0f1ad707');
+        const importedSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+            this,
+            'imported-security-group',
+            'sg-07ac7977e0f1ad707',
+        );
 
         const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
             vpc: props.vpc,
@@ -41,7 +45,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
             minCapacity: 1,
             maxCapacity: 100,
             vpcSubnets: { subnetType: SubnetType.PUBLIC },
-            securityGroup, 
+            securityGroup: importedSecurityGroup,
         });
 
         const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
@@ -50,19 +54,17 @@ export class CipherLaunchContainerService extends cdk.Stack {
 
         cluster.addAsgCapacityProvider(capacityProvider);
 
-        const serviceHealthCheck = {
-            command: ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"],
-            interval: cdk.Duration.seconds(30),
-            retries: 10,
-            startPeriod: cdk.Duration.seconds(10),
-            timeout: cdk.Duration.seconds(10)
-        }
-
         const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 
         taskDefinition.addContainer('Container', {
             image: ecs.ContainerImage.fromEcrRepository(repository),
-            healthCheck: serviceHealthCheck,
+            healthCheck: {
+                command: ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"],
+                interval: cdk.Duration.seconds(30),
+                retries: 10,
+                startPeriod: cdk.Duration.seconds(10),
+                timeout: cdk.Duration.seconds(10)
+            },
             memoryLimitMiB: 1024,
             environment: {
                 STAGE: props.stage
@@ -71,8 +73,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
                 streamPrefix: ECRRepoName
             }),
             portMappings: [{
-                containerPort: 80,
-                hostPort: 80
+                containerPort: 80
             }]
         });
 
