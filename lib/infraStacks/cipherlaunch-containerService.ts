@@ -52,6 +52,13 @@ export class CipherLaunchContainerService extends cdk.Stack {
     
     taskDefinition.addContainer('Container', {
         image: ecs.ContainerImage.fromEcrRepository(repository),
+        healthCheck: {
+            command: ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1" ],
+            interval: cdk.Duration.seconds(10),
+            retries: 10,
+            startPeriod: cdk.Duration.seconds(10),
+            timeout: cdk.Duration.seconds(10)
+        },
         memoryLimitMiB: 1024,
         environment: {
             STAGE: props.stage
