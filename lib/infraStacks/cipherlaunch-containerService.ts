@@ -54,7 +54,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
         image: ecs.ContainerImage.fromEcrRepository(repository),
         healthCheck: {
             command: ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1" ],
-            interval: cdk.Duration.seconds(10),
+            interval: cdk.Duration.seconds(30),
             retries: 10,
             startPeriod: cdk.Duration.seconds(10),
             timeout: cdk.Duration.seconds(10)
