@@ -103,8 +103,6 @@ export class CipherLaunchContainerService extends cdk.Stack {
             desiredCount: 1        
         });
 
-        ecsService.service.connections.allowFrom()
-
         ecsService.targetGroup.configureHealthCheck({
             path: '/health',
             interval: cdk.Duration.seconds(30),
