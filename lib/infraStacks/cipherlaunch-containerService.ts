@@ -3,7 +3,8 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as ecsPatterns from '@aws-cdk/aws-ecs-patterns'
+import * as ecsPatterns from '@aws-cdk/aws-ecs-patterns';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
 import { SubnetType } from '@aws-cdk/aws-ec2';
 const ECRRepoName = "clapi"
@@ -29,11 +30,22 @@ export class CipherLaunchContainerService extends cdk.Stack {
             vpc: props.vpc
         });
 
-        const importedSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(
-            this,
-            'imported-security-group',
-            'sg-07ac7977e0f1ad707',
-        );
+        const albSecurityGroup = new ec2.SecurityGroup(this, 'albSecurityGroup', {
+            vpc: props.vpc,
+            description: 'ALB default security group',
+            allowAllOutbound: true,   // Can be set to false
+        });
+
+        albSecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80), 'Allow all ipv4 http traffic');
+        albSecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'Allow all ipv4 https traffic');
+
+        const asgInstanceSecurityGroup = new ec2.SecurityGroup(this, 'asgInstanceSecurityGroup', {
+            vpc: props.vpc,
+            description: 'ASG Instance default security group',
+            allowAllOutbound: true,   // Can be set to false
+        });
+
+        asgInstanceSecurityGroup.addIngressRule(albSecurityGroup, ec2.Port.tcpRange(49153, 65535), 'Allow all http traffic from ALB on ephemeral dynamic ports');
 
         const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
             vpc: props.vpc,
@@ -44,8 +56,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
             keyName: "cl-eng",
             minCapacity: 1,
             maxCapacity: 100,
-            vpcSubnets: { subnetType: SubnetType.PUBLIC },
-            securityGroup: importedSecurityGroup,
+            securityGroup: asgInstanceSecurityGroup,
         });
 
         const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
@@ -97,16 +108,36 @@ export class CipherLaunchContainerService extends cdk.Stack {
             })
         );
 
+        // Create ALB
+        const alb = new elbv2.ApplicationLoadBalancer(this, 'alb', {
+            vpc: props.vpc,
+            internetFacing: true,
+            securityGroup: albSecurityGroup,
+        });
+
+        // Add listener to ALB
+        const listener = alb.addListener('Listener', {
+            port: 80,
+            open: true,
+        });
+
+        // Add target to the ALB listener
+        listener.addTargets('default-target', {
+            port: 80,
+            targets: [autoScalingGroup],
+            healthCheck: {
+                path: '/health',
+                unhealthyThresholdCount: 2,
+                healthyThresholdCount: 5,
+                interval: cdk.Duration.seconds(30),
+            },
+        });
+
         const ecsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'Service', {
             cluster: cluster,
             taskDefinition: taskDefinition,
-            desiredCount: 1
-        });
-
-        ecsService.targetGroup.configureHealthCheck({
-            path: '/health',
-            interval: cdk.Duration.seconds(30),
-            timeout: cdk.Duration.seconds(10),
+            desiredCount: 1,
+            loadBalancer: alb,
         });
     }
 }
