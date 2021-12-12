@@ -37,7 +37,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
 
         const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
             vpc: props.vpc,
-            healthCheck: autoscaling.HealthCheck.ec2({ grace: cdk.Duration.seconds(300) }),
+            healthCheck: autoscaling.HealthCheck.elb({ grace: cdk.Duration.seconds(300) }),
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.XLARGE4),
             machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
             desiredCapacity: 2,
@@ -100,13 +100,17 @@ export class CipherLaunchContainerService extends cdk.Stack {
         const ecsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'Service', {
             cluster: cluster,
             taskDefinition: taskDefinition,
-            desiredCount: 1
+            desiredCount: 1        
         });
+
+        ecsService.service.connections.allowFrom()
 
         ecsService.targetGroup.configureHealthCheck({
             path: '/health',
             interval: cdk.Duration.seconds(30),
-            timeout: cdk.Duration.seconds(10),
+            timeout: cdk.Duration.seconds(10)
         });
+
+
     }
 }
