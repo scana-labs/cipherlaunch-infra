@@ -102,8 +102,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
                 effect: Effect.ALLOW,
                 actions: ["appsync:GraphQL"],
                 resources: [
-                    graphQLARN,
-                    `${graphQLARN}/types/*/fields/*`
+                    graphQLARN
                 ]
             })
         );
