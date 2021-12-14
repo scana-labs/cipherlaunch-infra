@@ -10,7 +10,7 @@ import { SubnetType } from '@aws-cdk/aws-ec2';
 const ECRRepoName = "clapi"
 
 const StageGraphQLARNMappings = new Map<string, string>([
-    ["dev", "arn:aws:appsync:us-west-2:342243318645:apis/uezpj4ilpnejddwt7f32uo4xsm"]
+    ["dev", "arn:aws:appsync:us-west-2:342243318645:apis/uezpj4ilpnejddwt7f32uo4xsm/*"]
 ]);
 
 export interface CipherLaunchContainerServiceProps extends cdk.StackProps {
