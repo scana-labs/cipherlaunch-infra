@@ -76,7 +76,7 @@ export class CipherLaunchContainerService extends cdk.Stack {
                 startPeriod: cdk.Duration.seconds(10),
                 timeout: cdk.Duration.seconds(10)
             },
-            memoryLimitMiB: 1024,
+            memoryLimitMiB: 9536,
             environment: {
                 STAGE: props.stage
             },
