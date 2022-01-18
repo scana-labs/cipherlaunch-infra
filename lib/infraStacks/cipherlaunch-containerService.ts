@@ -114,6 +114,24 @@ export class CipherLaunchContainerService extends cdk.Stack {
             securityGroup: albSecurityGroup,
         });
 
+         // Add listener to ALB
+         const listener = alb.addListener('Listener', {
+            port: 80,
+            open: true,
+        });
+
+        // Add target to the ALB listener
+        listener.addTargets('default-target', {
+            port: 80,
+            targets: [autoScalingGroup],
+            healthCheck: {
+                path: '/health',
+                unhealthyThresholdCount: 2,
+                healthyThresholdCount: 5,
+                interval: cdk.Duration.seconds(30),
+            },
+        });
+
         const ecsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'Service', {
             cluster: cluster,
             taskDefinition: taskDefinition,
